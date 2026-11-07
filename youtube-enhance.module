@@ -1,0 +1,17 @@
+#!name=YouTube Enhance（小火箭适配版）
+#!desc=屏蔽广告，启用后台播放、画中画、最高 4 倍速。由 Loon 插件 youtube-enhance 转换，脚本加了 Shadowrocket 兼容层（TextEncoder/TextDecoder 补全、body/status 归一化、开关默认值注入），核心逻辑为原作者代码未改。原作者 xzavier-amico，原始逻辑来自 Maasea（Apache-2.0）。
+#!author=xzavier-amico（原作） / lyc-000001（小火箭适配）
+#!homepage=https://github.com/lyc-000001/youtube-shadowrocket
+#!icon=https://raw.githubusercontent.com/xzavier-amico/modules/master/egern/youtube/icon/YouTube.png
+
+[Script]
+http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(?:player\/ad_break|log_event)(?:\?.*)?$|^https?:\/\/[\w-]+\.googlevideo\.com\/(?:initplayback|videoplayback)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/lyc-000001/youtube-shadowrocket/main/youtube_shadowrocket.js, requires-body=true, binary-body-mode=true, timeout=30, tag=youtube.enhance.request
+http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(?:navigation\/resolve_url|browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|config|log_event)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/lyc-000001/youtube-shadowrocket/main/youtube_shadowrocket.js, requires-body=true, binary-body-mode=true, max-size=10485760, timeout=60, tag=youtube.enhance.response
+http-response ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback(?:\?.*)?$ script-path=https://raw.githubusercontent.com/lyc-000001/youtube-shadowrocket/main/youtube_shadowrocket.js, requires-body=true, binary-body-mode=true, max-size=10485760, timeout=60, tag=youtube.enhance.ump
+
+[URL Rewrite]
+^https:\/\/www\.youtube\.com\/(pagead|pcs)\/ reject header
+^https:\/\/s\.youtube\.com\/api\/stats\/ads reject header
+
+[MITM]
+hostname = *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, s.youtube.com
